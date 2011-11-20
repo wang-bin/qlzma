@@ -1,10 +1,9 @@
 #ifndef QLZMA_H
 #define QLZMA_H
 
-#include <vector>
 #include <qstring.h>
-#include "lzma/C/Types.h"
-//struct ICompressProgress;
+
+
 class QLzmaPrivate;
 class QLzma
 {

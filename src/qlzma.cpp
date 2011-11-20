@@ -162,7 +162,7 @@ void QLzma::compress()
 {
 	//QFile in_file(d->in_path);
 	std::ifstream is;
-	is.open(qstr2cstr(d->in_path),std::ios_base::binary |std::ios_base::in);
+	is.open(qstr2cstr(d->in_path), std::ios_base::binary |std::ios_base::in);
 	is.seekg(0,std::ios_base::end);
 	size_t size = is.tellg();
 	is.seekg(0,std::ios_base::beg);
@@ -173,10 +173,10 @@ void QLzma::compress()
 	is.close();
 	Byte *buffer_compressed=new Byte[size];
 	size_t len_compressed = LZMA86_HEADER_SIZE+size + size / 3 + 128;
-	compressData((Byte*)buffer,size,buffer_compressed,&len_compressed,d->level);
+	compressData((Byte*)buffer, size, buffer_compressed, &len_compressed, d->level);
 	std::ofstream os;
 	os.open(qstr2cstr(d->out_path));
-	os.write((const char*)&buffer_compressed[0],len_compressed);
+	os.write((const char*)&buffer_compressed[0], len_compressed);
 	os.close();
 	delete [] buffer_compressed;
 }
@@ -189,7 +189,7 @@ size_t QLzma::inSize() const
 size_t QLzma::unpackSize() const
 {
 	std::ifstream is;
-	is.open(qstr2cstr(d->in_path),std::ios_base::binary |std::ios_base::in);
+	is.open(qstr2cstr(d->in_path), std::ios_base::binary | std::ios_base::in);
 	is.seekg(0,std::ios_base::end);
 	size_t unpackSize = is.tellg();
 
@@ -210,17 +210,17 @@ size_t QLzma::unpackSize() const
 
 void QLzma::setInPath(const QString &in)
 {
-	d->in_path=in;
+	d->in_path = in;
 }
 
 void QLzma::setOutPath(const QString &out)
 {
-	d->out_path=out;
+	d->out_path = out;
 }
 
 void QLzma::setLevel(int level)
 {
-	d->level=level;
+	d->level = level;
 }
 
 QString QLzma::outPath()
