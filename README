@@ -1,0 +1,3 @@
+Only compressing is supported now. The progress can't be stopped.
+Usage:
+	qlzma file_to_compress
