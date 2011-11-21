@@ -1,3 +1,10 @@
-Only compressing is supported now. The progress can't be stopped.
+Only compressing is supported now.
+You can pause, resume or stop the progress.
+Progress dialog shows the file's name, compress ratio, compressed size, total size,
+speed, time elapsed, time remain.
+
 Usage:
 	qlzma file_to_compress
+
+BUG:
+	The program may finish unexpectedly
