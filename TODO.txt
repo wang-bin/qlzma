@@ -1,0 +1,1 @@
+show option dialog if argc is 1
