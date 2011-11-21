@@ -1,4 +1,5 @@
 TEMPLATE = lib
+QT -= gui
 CONFIG += lzma-buildlib
 DEFINES += _7ZIP_ST
 

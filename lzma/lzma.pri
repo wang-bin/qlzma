@@ -93,7 +93,7 @@ QMAKE_LFLAGS_RPATH += #will append to rpath dir
         #The following may not need to change
 
         #TEMPLATE = lib
-        QT -= gui
+		#QT -= gui
         VERSION = $$LIB_VERSION
         TARGET = $$PROJECT_TARGETNAME
         DESTDIR= $$PROJECT_LIBDIR
