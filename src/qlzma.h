@@ -14,19 +14,18 @@ public:
 	QLzma(const QString& in, const QString& out);
 	~QLzma();
 
+	/*!
+		TODO: can be stdin, stdout
+	*/
+	void setUncompressedFile(const QString& file);
+	void setCompressedFile(const QString& file);
+	void setLevel(int level);
+
 	int compressData(const unsigned char* data, size_t len, unsigned char *outBuf, size_t* destLen, int level=7, unsigned int dictSize=1 << 16 /*64kb*/);//char* data_out);
 	//void extract();
 
-	size_t inSize() const;
+	size_t packSize() const;
 	size_t unpackSize() const;
-/*!
-  can be stdin, stdout
-*/
-	void setInPath(const QString& in);//list?
-	void setOutPath(const QString& out);
-	void setLevel(int level);
-
-	QString outPath();
 
 signals:
 	void finished();
