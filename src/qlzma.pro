@@ -3,13 +3,14 @@ TEMPLATE = app
 
 include(../lzma/lzma.pri)
 
-INCLUDEPATH += ..
+INCLUDEPATH += . ..
 
 SOURCES += main.cpp\
     qlzma.cpp \
     gui/ezprogressdialog.cpp \
     utils/convert.cpp \
-    utils/qt_util.cpp
+    utils/qt_util.cpp \
+    gui/qlzmaoptiondialog.cpp
 
 HEADERS  += \
     qlzma.h \
@@ -18,7 +19,10 @@ HEADERS  += \
     gui/ezprogressdialog.h \
     utils/convert.h \
     utils/qt_util.h \
-    msgdef.h
+    msgdef.h \
+    gui/qlzmaoptiondialog.h
+
+
 
 
 

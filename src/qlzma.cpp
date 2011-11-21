@@ -188,7 +188,7 @@ SRes QLzmaPrivate::OnProgress(void *p, UInt64 inSize, UInt64 outSize)
 	progress->setValue(inSize);
 	progress->setLabelText(q->out_msg + q->extra_msg);
 	qApp->processEvents();
-	fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %llu in: %llu)", 100.0*(qreal)q->processedSize/(qreal)q->totalSize, q->ratio,outSize, inSize);
+	fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %llu in: %llu)", 100.0*(qreal)q->processedSize/(qreal)q->totalSize, q->ratio, outSize, inSize);
 	//printf("p=%d", *(int*)(p));
 	//fflush(stdout);
 	return SZ_OK;
