@@ -5,7 +5,6 @@
 
 #include "lzma/C/Types.h"
 
-#include "global.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +14,7 @@ int main(int argc, char *argv[])
 	lzma.compress();
 
 	lzma.setInPath("lzma-4.32.7.tar.lzma");
-	ZDEBUG("lzma-4.32.7.tar.lzma unpack size: %d",lzma.unpackSize());
+	qDebug("lzma-4.32.7.tar.lzma unpack size: %d",lzma.unpackSize());
 
-	return 0;//a.exec();
+	return a.exec();
 }

@@ -1,12 +1,13 @@
 #ifndef QLZMA_H
 #define QLZMA_H
 
-#include <qstring.h>
+#include <qobject.h>
 
 
 class QLzmaPrivate;
-class QLzma
+class QLzma : public QObject
 {
+	Q_OBJECT
 public:
 	QLzma();
 	QLzma(const QString& in);
@@ -14,7 +15,6 @@ public:
 	~QLzma();
 
 	int compressData(const unsigned char* data, size_t len, unsigned char *outBuf, size_t* destLen, int level=7, unsigned int dictSize=1 << 16 /*64kb*/);//char* data_out);
-	void compress();
 	//void extract();
 
 	size_t inSize() const;
@@ -28,8 +28,22 @@ public:
 
 	QString outPath();
 
-private:
-	QLzmaPrivate *d;
+signals:
+	void finished();
+
+public slots:
+	void compress();
+	void extract();
+	void pauseOrResume();
+	void pause();
+	void resume();
+	void stop();
+
+protected:
+	virtual void timerEvent(QTimerEvent *);
+
+	Q_DECLARE_PRIVATE(QLzma)
+	QLzmaPrivate *d_ptr;
 };
 
 #endif // QLZMA_H

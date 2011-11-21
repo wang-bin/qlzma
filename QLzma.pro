@@ -7,4 +7,6 @@ qlzma.depends += lzma
 
 
 OTHER_FILES += \
-    lzma/lzma.txt
+	README \
+	TODO.txt \
+	lzma/lzma.txt
