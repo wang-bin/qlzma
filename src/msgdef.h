@@ -21,7 +21,7 @@ static void initTranslations() {
 	g_ratio_tr = QObject::tr("Ratio: ");
 	g_elapsed_remain_tr = QObject::tr("Elapsed: %1s Remaining: %2s");
 	g_files_tr = QObject::tr("files");
-	g_align_length = -(std::max(g_size_tr.length(), g_processed_tr.length()));
+	g_align_length = 0;//-(std::max(g_size_tr.length(), g_processed_tr.length()));
 }
 
 
