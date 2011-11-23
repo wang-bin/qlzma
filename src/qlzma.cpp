@@ -78,7 +78,7 @@ public:
 		QObject::connect(progress->button(1), SIGNAL(clicked()), q_ptr, SLOT(pauseOrResume()));
 		QObject::connect(progress, SIGNAL(canceled()), q_ptr, SLOT(stop()));
 		progress->setMaximum(totalSize);
-		time.start();
+		time.restart();
 	}
 
 
@@ -97,13 +97,14 @@ public:
 		if(!pause)
 			elapsed = last_elapsed + time.elapsed();
 		speed = processedSize/(1+elapsed)*1000; //>0
-		left = (totalSize-processedSize)/(1+speed);
+		left = (qreal)(totalSize-processedSize)/(qreal)(1+speed);
 		ratio = 100.0 * (qreal)compressedSize/(qreal)processedSize;
 	}
 
 	void updateMessage() {
 		out_msg = g_BaseMsg_Ratio(in_path, totalSize, QString("%1%").arg(ratio, 0, 'g', 3), processedSize, max_str);
-		extra_msg = g_ExtraMsg_Detail(speed, elapsed, left);
+		extra_msg = g_ExtraMsg_Ratio(speed, elapsed, left);
+		fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %u in: %u)", 100.0*(qreal)processedSize/(qreal)totalSize, ratio, compressedSize, processedSize);
 	}
 
 	//Lzma will not call ICompressProgress when finished.
@@ -123,7 +124,7 @@ public:
 		}
 		return self;
 	}
-	static ICompressProgress g_ProgressCallback;// = { &OnProgress };
+	static ICompressProgress g_ProgressCallback;
 	static SRes OnProgress(void *p, UInt64 inSize, UInt64 outSize);
 
 	bool compress_mode;
@@ -148,8 +149,9 @@ private:
 	void init() {
 		g_time_convert = msec2secstr;
 		initTranslations();
-		self = this;
 		progressCallBack = &QLzmaPrivate::g_ProgressCallback;
+		time = QTime::currentTime();
+		self = this;
 	}
 
 	void initGui() {
@@ -175,9 +177,11 @@ private:
 
 QLzmaPrivate* QLzmaPrivate::self = 0;
 EZProgressDialog* QLzmaPrivate::progress = 0; //DO NOT new. Because it is before qApp created;
+ICompressProgress QLzmaPrivate::g_ProgressCallback  = { &OnProgress };
 
 SRes QLzmaPrivate::OnProgress(void *p, UInt64 inSize, UInt64 outSize)
 {
+	Q_UNUSED(p);
 	QLzmaPrivate* q = QLzmaPrivate::instance();
 	q->compressedSize = outSize;
 	q->processedSize = inSize;
@@ -188,12 +192,9 @@ SRes QLzmaPrivate::OnProgress(void *p, UInt64 inSize, UInt64 outSize)
 	progress->setValue(inSize);
 	progress->setLabelText(q->out_msg + q->extra_msg);
 	qApp->processEvents();
-	fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %llu in: %llu)", 100.0*(qreal)q->processedSize/(qreal)q->totalSize, q->ratio, outSize, inSize);
-	//printf("p=%d", *(int*)(p));
-	//fflush(stdout);
+
 	return SZ_OK;
 }
-ICompressProgress QLzmaPrivate::g_ProgressCallback  = { &OnProgress };
 
 
 
