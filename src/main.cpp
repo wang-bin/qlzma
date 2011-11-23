@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 	lzma.setUncompressedFile(argv[1]);
 	lzma.compress();
 
-	qDebug("(lzma 4.32.7) unpack size: %d, pack size: %d", lzma.unpackSize(), lzma.packSize());
+	qDebug("unpack size: %d, pack size: %d", lzma.unpackSize(), lzma.packSize());
 
 	return a.exec();
 }
