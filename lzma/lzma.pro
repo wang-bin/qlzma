@@ -12,7 +12,8 @@ HEADERS = C/LzmaLib.h \
     C/Lzma2Dec.h \
     C/LzFind.h \
     C/Alloc.h \
-    C/Types.h
+    C/Types.h \
+    C/LzHash.h
 
 
 SOURCES = C/LzmaLib.c \
