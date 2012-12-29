@@ -1,1 +1,5 @@
 show option dialog if argc is 1
+multiple file/dir support: tar stream to lzma
+right menu associate
+use compress/extract thread
+LZMA instead of LZMA86. liblzma
