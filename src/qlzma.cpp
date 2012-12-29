@@ -27,7 +27,14 @@ static void * AllocForLzma(void *p, size_t size) { return malloc(size); }
 static void FreeForLzma(void *p, void *address) { free(address); }
 static ISzAlloc SzAllocForLzma = { &AllocForLzma, &FreeForLzma };
 
-
+class CompressProgressGui : public ICompressProgress
+{
+public:
+    CompressProgressGui(QLzmaPrivate *p):q(p) {}
+    void updateGui(UInt64 inSize, UInt64 outSize);
+private:
+    QLzmaPrivate *q;
+};
 
 class QLzmaPrivate {
 	Q_DECLARE_PUBLIC(QLzma)
@@ -36,7 +43,7 @@ public:
 		:compress_mode(true),q_ptr(0),pack_file(""),unpack_file(""),level(7)
 		,totalSize(0),processedSize(0),extra_msg(QObject::tr("Calculating..."))
 		,last_elapsed(1),elapsed(0),time_passed(0),pause(false),left(0),ratio(1.0)
-		,progressCallBack(new ICompressProgress)
+        ,progressCallBack(new CompressProgressGui(this))
 	{
 		init();
 	}
@@ -50,7 +57,6 @@ public:
 			delete progress;
 			progress = 0;
 		}
-		self = 0;
 	}
 
 	void setUnpackFile(const QString& path) {
@@ -104,7 +110,7 @@ public:
 	void updateMessage() {
 		out_msg = g_BaseMsg_Ratio(in_path, totalSize, QString("%1%").arg(ratio, 0, 'g', 3), processedSize, max_str);
 		extra_msg = g_ExtraMsg_Ratio(speed, elapsed, left);
-		fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %u in: %u)", 100.0*(qreal)processedSize/(qreal)totalSize, ratio, compressedSize, processedSize);
+        //fprintf(stdout,"\r Processed: %.2f%% Ratio: %.2f%% (out: %u in: %u)", 100.0*(qreal)processedSize/(qreal)totalSize, ratio, compressedSize, processedSize);
 	}
 
 	//Lzma will not call ICompressProgress when finished.
@@ -118,14 +124,7 @@ public:
 		qApp->processEvents();
 	}
 
-	static QLzmaPrivate* instance() {
-		if (!self) {
-
-		}
-		return self;
-	}
-	static ICompressProgress g_ProgressCallback;
-	static SRes OnProgress(void *p, UInt64 inSize, UInt64 outSize);
+    static SRes OnProgress(void *p, UInt64 inSize, UInt64 outSize);
 
 	bool compress_mode;
 	QLzma *q_ptr;
@@ -149,9 +148,8 @@ private:
 	void init() {
 		g_time_convert = msec2secstr;
 		initTranslations();
-		progressCallBack = &QLzmaPrivate::g_ProgressCallback;
+        progressCallBack->Progress = OnProgress;
 		time = QTime::currentTime();
-		self = this;
 	}
 
 	void initGui() {
@@ -170,29 +168,32 @@ private:
 		}
 	}
 
-	static QLzmaPrivate* self;
 	static EZProgressDialog *progress;
 	ICompressProgress *progressCallBack;
+    friend class CompressProgressGui;
 };
 
-QLzmaPrivate* QLzmaPrivate::self = 0;
 EZProgressDialog* QLzmaPrivate::progress = 0; //DO NOT new. Because it is before qApp created;
-ICompressProgress QLzmaPrivate::g_ProgressCallback  = { &OnProgress };
 
+void CompressProgressGui::updateGui(UInt64 inSize, UInt64 outSize)
+{
+    q->compressedSize = outSize;
+    q->processedSize = inSize;
+
+    q->estimate();
+    q->updateMessage();
+
+    q->progress->setValue(inSize);
+    q->progress->setLabelText(q->out_msg + q->extra_msg);
+    qApp->processEvents();
+}
+
+//p is ICompressProgress* !!
 SRes QLzmaPrivate::OnProgress(void *p, UInt64 inSize, UInt64 outSize)
 {
 	Q_UNUSED(p);
-	QLzmaPrivate* q = QLzmaPrivate::instance();
-	q->compressedSize = outSize;
-	q->processedSize = inSize;
-
-	q->estimate();
-	q->updateMessage();
-
-	progress->setValue(inSize);
-	progress->setLabelText(q->out_msg + q->extra_msg);
-	qApp->processEvents();
-
+    CompressProgressGui *gui = static_cast<CompressProgressGui*>(p);
+    gui->updateGui(inSize, outSize);
 	return SZ_OK;
 }
 
@@ -232,9 +233,9 @@ QLzma::QLzma(const QString &in, const QString &out)
 
 QLzma::~QLzma()
 {
-	Q_D(QLzma);
-	if(d->instance()) {
-		delete d;
+    if (d_ptr) {
+        delete d_ptr;
+        d_ptr = 0;
 	}
 }
 
@@ -404,8 +405,9 @@ void QLzma::resume()
 void QLzma::stop()
 {
 	Q_D(QLzma);
-	if (d->instance()) {
-		delete d;
+    if (d_ptr) {
+        delete d_ptr;
+        d_ptr = 0;
 	}
 	qApp->quit();
 }
